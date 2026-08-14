@@ -1,5 +1,32 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/PointerLockControls.js';
+const THREE = window.THREE;
+
+class FPSControls {
+  constructor(camera, domElement) {
+    this.camera = camera;
+    this.domElement = domElement;
+    this.isLocked = false;
+    this.yaw = 0;
+    this.pitch = 0;
+    this.listeners = { lock: [], unlock: [] };
+    domElement.addEventListener('mousemove', e => {
+      if (!this.isLocked) return;
+      this.yaw -= e.movementX * 0.0022;
+      this.pitch -= e.movementY * 0.0022;
+      this.pitch = Math.max(-1.48, Math.min(1.48, this.pitch));
+      camera.rotation.set(this.pitch, this.yaw, 0, 'YXZ');
+    });
+    document.addEventListener('pointerlockchange', () => {
+      this.isLocked = document.pointerLockElement === domElement;
+      (this.listeners[this.isLocked ? 'lock' : 'unlock'] || []).forEach(fn => fn());
+    });
+  }
+  addEventListener(type, fn) { if (this.listeners[type]) this.listeners[type].push(fn); }
+  lock() { this.domElement.requestPointerLock(); }
+  unlock() { if (document.pointerLockElement) document.exitPointerLock(); }
+  moveRight(distance) { this.camera.translateX(distance); }
+  moveForward(distance) { this.camera.translateZ(-distance); }
+}
+const PointerLockControls = FPSControls;
 
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x090b0d); scene.fog=new THREE.FogExp2(0x090b0d,.009);
 const camera=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,700); camera.position.set(0,1.7,8);
