@@ -14,6 +14,7 @@
       <p>Realistic browser FPS prototype. Built for desktop mouse + keyboard.</p>
       <button id="start" type="button">DEPLOY</button>
       <div class="controls">WASD MOVE · SHIFT SPRINT · CTRL CROUCH · RMB AIM · LMB FIRE · R RELOAD · ESC PAUSE</div>
+      <div id="bootError" style="display:none;margin-top:16px;color:#ff4655;font:600 13px Rajdhani,Arial,sans-serif;line-height:1.5"></div>
     </div>
   </div>
 
@@ -25,31 +26,79 @@
       <div><span class="label">HEALTH</span><strong id="health">100</strong><div class="bar"><b id="healthBar"></b></div></div>
       <div class="ammo"><strong id="ammo">30</strong><span>/ <span id="reserve">120</span></span><small id="weaponState">READY</small></div>
     </div>
-    <div id="feed"></div>
   </div>
 
   <div id="pause" class="screen hidden">
     <div class="panel"><div class="eyebrow">SYSTEM PAUSED</div><h2>HOLD POSITION</h2><button id="resume" type="button">RESUME</button></div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/three.min.js"></script>
-  <script src="game.js"></script>
   <script>
-    // Fallback startup handler: guarantees DEPLOY responds even if the
-    // module's event binding is unavailable while the page is loading.
-    window.addEventListener('DOMContentLoaded', () => {
-      const start = document.getElementById('start');
-      if (!start) return;
-      start.addEventListener('click', () => {
-        try {
-          if (document.pointerLockElement !== document.body) {
-            document.body.requestPointerLock();
-          }
-        } catch (error) {
-          console.error('DEPLOY pointer-lock error:', error);
-        }
+  (() => {
+    const start = document.getElementById('start');
+    const menu = document.getElementById('menu');
+    const hud = document.getElementById('hud');
+    const errorBox = document.getElementById('bootError');
+    let loading = false;
+
+    function showBootError(message) {
+      errorBox.style.display = 'block';
+      errorBox.textContent = 'DEPLOY ERROR: ' + message + ' — press DEPLOY to retry.';
+      start.disabled = false;
+      start.textContent = 'RETRY DEPLOY';
+      loading = false;
+    }
+
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Could not load ' + src));
+        document.body.appendChild(s);
       });
+    }
+
+    async function deploy(event) {
+      event.preventDefault();
+      if (loading) return;
+      loading = true;
+      start.disabled = true;
+      start.textContent = 'DEPLOYING…';
+      errorBox.style.display = 'none';
+
+      // Hide the menu immediately. The button can therefore never appear dead.
+      menu.classList.add('hidden');
+      hud.classList.remove('hidden');
+
+      try {
+        if (!window.THREE) {
+          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r180/three.min.js');
+        }
+        if (!window.__IRONLINE_GAME_LOADED) {
+          await loadScript('game.js?v=deploy4');
+          window.__IRONLINE_GAME_LOADED = true;
+        }
+        // game.js owns the actual FPS startup. Request pointer lock from this
+        // original user gesture as well, which is the most reliable browser path.
+        const target = document.body;
+        if (target.requestPointerLock) target.requestPointerLock();
+        loading = false;
+      } catch (err) {
+        menu.classList.remove('hidden');
+        hud.classList.add('hidden');
+        showBootError(err && err.message ? err.message : String(err));
+        console.error(err);
+      }
+    }
+
+    start.addEventListener('click', deploy);
+    start.addEventListener('pointerup', e => {
+      if (e.pointerType === 'mouse') start.focus();
     });
+
+    // Make the intent available to the game engine and keep resume reliable.
+    window.__IRONLINE_DEPLOY = deploy;
+  })();
   </script>
 </body>
 </html>
