@@ -1,1 +1,54 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IRONLINE — 3D FPS</title><link rel="stylesheet" href="style.css"></head><body><div id="menu" class="screen"><div class="panel"><div class="eyebrow">WEBGL COMBAT // V2</div><h1>IRONLINE</h1><p>TACTICAL FPS TRAINING SIMULATION</p><button id="start">DEPLOY</button><div class="controls">WASD MOVE · SHIFT SPRINT · CTRL CROUCH · SPACE JUMP · RMB AIM · LMB FIRE · R RELOAD · ESC PAUSE</div></div></div><div id="hud" class="hidden"><div class="topbar"><span>IRONLINE // LIVE RANGE</span><span>STATUS <b>ONLINE</b></span></div><div id="scorebox">SCORE <strong id="score">00000</strong> · KILLS <strong id="kills">00</strong></div><div id="crosshair"><i></i><i></i><i></i><i></i><b></b></div><div id="hittext"></div><div class="bottom"><div><span class="label">HEALTH</span><strong id="health">100</strong><div class="bar"><b id="healthBar"></b></div></div><div class="ammo"><strong id="ammo">30</strong><span id="reserve">/ 120</span><small id="weaponState">READY</small></div></div></div><div id="pause" class="screen hidden"><div class="panel"><div class="eyebrow">SYSTEM PAUSED</div><h2>HOLD POSITION</h2><button id="resume">RESUME</button></div></div><script type="module" src="game.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>IRONLINE — 3D FPS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="menu" class="screen">
+    <div class="panel">
+      <div class="eyebrow">WEBGL COMBAT SIMULATION</div>
+      <h1>IRONLINE</h1>
+      <p>Realistic browser FPS prototype. Built for desktop mouse + keyboard.</p>
+      <button id="start" type="button">DEPLOY</button>
+      <div class="controls">WASD MOVE · SHIFT SPRINT · CTRL CROUCH · RMB AIM · LMB FIRE · R RELOAD · ESC PAUSE</div>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div class="topbar"><span>IRONLINE // TRAINING RANGE</span><span id="status">LIVE</span></div>
+    <div id="crosshair"><i></i><i></i><i></i><i></i><b></b></div>
+    <div id="hitmarker">×</div>
+    <div class="bottom">
+      <div><span class="label">HEALTH</span><strong id="health">100</strong><div class="bar"><b id="healthBar"></b></div></div>
+      <div class="ammo"><strong id="ammo">30</strong><span>/ <span id="reserve">120</span></span><small id="weaponState">READY</small></div>
+    </div>
+    <div id="feed"></div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="panel"><div class="eyebrow">SYSTEM PAUSED</div><h2>HOLD POSITION</h2><button id="resume" type="button">RESUME</button></div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+  <script>
+    // Fallback startup handler: guarantees DEPLOY responds even if the
+    // module's event binding is unavailable while the page is loading.
+    window.addEventListener('DOMContentLoaded', () => {
+      const start = document.getElementById('start');
+      if (!start) return;
+      start.addEventListener('click', () => {
+        try {
+          if (document.pointerLockElement !== document.body) {
+            document.body.requestPointerLock();
+          }
+        } catch (error) {
+          console.error('DEPLOY pointer-lock error:', error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
