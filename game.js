@@ -40,6 +40,7 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(240,240),mat(0x343938,.96));
 for(let i=0;i<70;i++){const x=(Math.random()-.5)*150,z=(Math.random()-.5)*130;if(Math.abs(x)<14&&Math.abs(z)<18)continue;box(2+Math.random()*6,2+Math.random()*10,2+Math.random()*6,Math.random()>.5?0x34383a:0x45433d,x,Math.random()*5,z)}
 for(let x=-60;x<=60;x+=10){box(.18,.08,120,0x202524,x,.04,0,false);box(120,.08,.18,0x202524,0,.04,x,false)}
 const weaponRig=new THREE.Group(); camera.add(weaponRig); weaponRig.position.set(.02,-.16,-.48);
+const weaponRig=new THREE.Group(); camera.add(weaponRig); weaponRig.position.set(.02,-.16,-.48);
 const weapon=new THREE.Group(); weaponRig.add(weapon); weapon.position.set(0,-.06,-.18);
 const gunMat=mat(0x151719,.3,.8),metalMat=mat(0x303338,.22,.9),skinMat=mat(0xa86f51,.92,0),sleeveMat=mat(0x20272a,.85,.02);
 const receiver=new THREE.Mesh(new THREE.BoxGeometry(.3,.22,.8),gunMat);receiver.position.z=.05;weapon.add(receiver);
