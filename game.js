@@ -25,7 +25,7 @@ class FPSControls {
   lock() { this.domElement.requestPointerLock(); }
   unlock() { if (document.pointerLockElement) document.exitPointerLock(); }
   moveRight(distance) { this.camera.translateX(distance); }
-  moveForward(distance) { this.camera.translateZ(-distance); }
+  moveForward(distance) { this.camera.translateZ(distance); }
 }
 const PointerLockControls = FPSControls;
 
