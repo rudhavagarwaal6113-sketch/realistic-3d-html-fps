@@ -72,7 +72,7 @@
 
       try {
         if (!window.THREE) {
-          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r180/three.min.js');
+          await loadScript('three.min.js');
         }
         if (!window.__IRONLINE_GAME_LOADED) {
           await loadScript('game.js?v=deploy4');
